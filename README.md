@@ -10,23 +10,72 @@ Each site repo keeps only what is genuinely region-specific — its
 `_quarto.yml`. Everything they had in common lives here.
 
 ```r
-remotes::install_github("AIQC-Hub/reportlib@v0.1.0")
+remotes::install_github("AIQC-Hub/reportlib@v0.1.2")
 ```
 
 The three sites pin that tag, in `DESCRIPTION` and in their build workflows, so a
 change here cannot silently alter three published sites. **Tag each release** —
 an untagged push leaves the pin unresolvable.
 
-Or install from a checkout while developing:
+From a checkout, install the dependencies first:
 
-```r
+```sh
+Rscript tools/install-deps.R      # --check to report without installing
 R CMD INSTALL /path/to/reportlib
 ```
+
+`R CMD INSTALL` does **not** resolve dependencies. It stops at the first missing
+one and rolls the whole install back:
+
+```
+ERROR: dependency 'maps' is not available for package 'reportlib'
+* removing '.../R/x86_64-pc-linux-gnu-library/4.6/reportlib'
+```
+
+`tools/install-deps.R` reads the `Depends` and `Imports` below out of
+`DESCRIPTION` — there is no second list to keep in step — and installs whatever
+is absent from the library of whichever `Rscript` runs it. That last part is the
+point on a machine with more than one R: installing "for R" is not a thing,
+every install targets one library.
 
 The name is `reportlib` rather than `aiqc-report` because R rejects a hyphen in a
 package name at install time — which is why the site repos get away with
 `Package: arc-report`: those are never installed, only read as dependency
 manifests.
+
+## Dependencies
+
+19 direct, ~156 once CRAN's transitive closure is resolved. Only the direct ones
+are declared:
+
+| Package | Used for |
+|---------|----------|
+| `arrow` | `open_dataset`, `read_parquet`, `write_parquet` — the whole data layer |
+| `tidyverse` | ggplot2, dplyr, tidyr, purrr unqualified throughout the templates |
+| `data.table` | the chunked aggregation in `build_summaries()` |
+| `ggpubr` | `theme_pubr`, `font` |
+| `cowplot` | `plot_grid` |
+| `scales` | axis and label formatting (`comma`, `percent`, `number`, `alpha`) |
+| `maps` | **runtime only** — `ggplot2::borders()` calls `maps::map()` for the region maps |
+| `hexbin` | **runtime only** — `geom_hex()` needs it to bin |
+| `DT` | `datatable`, `formatRound` — the interactive tables |
+| `kableExtra` | `kbl`, `kable_styling` — the static ones |
+| `htmltools` | `tags`, `HTML`, `code` in table cells |
+| `rlang` | `sym`, `env`, `warn` for the variable-name indirection |
+| `digest`, `jsonlite` | `fingerprint_frames()` |
+| `dplyr`, `htmlwidgets`, `knitr`, `stats`, `utils` | reached through `::` |
+
+The two marked **runtime only** are the trap: nothing in this repo names them,
+because it is ggplot2 that loads them when a plot is drawn. Grepping the source
+for package names would drop both, and the failure lands much later, inside a
+render, as a missing-package error from a plot.
+
+`fontawesome` was declared until v0.1.2 and is now dropped — a leftover from
+Distill, with no call site in any of the four repos.
+
+Dependencies of the sites, not of this package: `rmarkdown` and `yaml` (the
+`scripts/*.R` wrappers read `config.yml`). Each site declares those in its own
+`DESCRIPTION`.
 
 ## Layout
 
