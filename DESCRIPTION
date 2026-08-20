@@ -1,0 +1,25 @@
+Package: aiqcreport
+Title: Shared Machinery for the AIQC In Situ Summary Reports
+Version: 0.1.0
+Authors@R: person("Takaya", "Saito", email = "takaya.saito@hi.no", role = c("aut", "cre"))
+Description: Functions and knitr templates shared by the regional CTD
+    data-summary sites (arc-report, bal-report, med-report). Each site keeps
+    only its region constants and its pages.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends:
+    R (>= 4.1),
+    arrow,
+    cowplot,
+    data.table,
+    DT,
+    fontawesome,
+    ggpubr,
+    hexbin,
+    htmltools,
+    kableExtra,
+    maps,
+    rlang,
+    scales,
+    tidyverse
+RoxygenNote: 7.3.2

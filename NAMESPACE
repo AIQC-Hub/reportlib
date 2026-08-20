@@ -1,0 +1,3 @@
+# Everything here is called from knitr templates evaluated in the page's
+# environment, so the whole surface is exported.
+exportPattern("^[^.]")
