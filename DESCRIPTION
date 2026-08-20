@@ -1,4 +1,4 @@
-Package: aiqcreport
+Package: reportlib
 Title: Shared Machinery for the AIQC In Situ Summary Reports
 Version: 0.1.0
 Authors@R: person("Takaya", "Saito", email = "takaya.saito@hi.no", role = c("aut", "cre"))

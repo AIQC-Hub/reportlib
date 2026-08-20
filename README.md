@@ -1,4 +1,4 @@
-# aiqcreport
+# reportlib
 
 Shared functions and knitr templates for the AIQC in situ CTD summary sites:
 [arc-report](https://github.com/AIQC-Hub/arc-report),
@@ -9,9 +9,16 @@ Each site repo keeps only what is genuinely region-specific — its
 `content/_func/common_<region>*.Rmd` constants, its pages, and its
 `_quarto.yml`. Everything they had in common lives here.
 
+Not published anywhere. Install from a checkout:
+
 ```r
-remotes::install_github("AIQC-Hub/aiqcreport@v0.1.0")
+R CMD INSTALL /path/to/reportlib
 ```
+
+The name is `reportlib` rather than `aiqc-report` because R rejects a hyphen in a
+package name at install time — which is why the site repos get away with
+`Package: arc-report`: those are never installed, only read as dependency
+manifests.
 
 ## Layout
 

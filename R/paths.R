@@ -10,7 +10,7 @@
 #' @return An absolute path.
 #' @export
 template_path <- function(...) {
-  p <- system.file("templates", ..., package = "aiqcreport")
+  p <- system.file("templates", ..., package = "reportlib")
   if (!nzchar(p)) {
     stop("no such template: ", file.path(...), call. = FALSE)
   }
