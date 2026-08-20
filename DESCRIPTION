@@ -24,6 +24,9 @@ Depends:
     tidyverse
 Imports:
     digest,
+    dplyr,
+    htmlwidgets,
+    stats,
     jsonlite,
     knitr,
     utils

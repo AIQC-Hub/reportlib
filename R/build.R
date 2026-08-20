@@ -60,7 +60,7 @@ build_summaries <- function(datasets,
   smin    <- function(x) if (all(is.na(x))) NA_real_ else as.numeric(min(x, na.rm = TRUE))
   smax    <- function(x) if (all(is.na(x))) NA_real_ else as.numeric(max(x, na.rm = TRUE))
   smean   <- function(x) if (all(is.na(x))) NA_real_ else as.numeric(mean(x, na.rm = TRUE))
-  smedian <- function(x) if (all(is.na(x))) NA_real_ else as.numeric(median(x, na.rm = TRUE))
+  smedian <- function(x) if (all(is.na(x))) NA_real_ else as.numeric(stats::median(x, na.rm = TRUE))
   # First non-missing value, for the per-profile identity columns.
   firstna <- function(x) { i <- which(!is.na(x)); if (length(i)) x[[i[[1L]]]] else x[[1L]] }
 

@@ -9,7 +9,15 @@ Each site repo keeps only what is genuinely region-specific — its
 `content/_func/common_<region>*.Rmd` constants, its pages, and its
 `_quarto.yml`. Everything they had in common lives here.
 
-Not published anywhere. Install from a checkout:
+```r
+remotes::install_github("AIQC-Hub/reportlib@v0.1.0")
+```
+
+The three sites pin that tag, in `DESCRIPTION` and in their build workflows, so a
+change here cannot silently alter three published sites. **Tag each release** —
+an untagged push leaves the pin unresolvable.
+
+Or install from a checkout while developing:
 
 ```r
 R CMD INSTALL /path/to/reportlib
@@ -35,6 +43,15 @@ manifests.
 Attaching the package attaches the plotting and table packages the templates
 rely on, which is why they are `Depends` rather than `Imports`: template code is
 evaluated in the page's environment, not the package's.
+
+`R CMD check` reports this as a NOTE ("Packages in Depends field not imported
+from"). Converting them to `import()` directives would be worse, not better:
+`data.table` and `dplyr` both export `first`, `last` and `between`, and the
+`Depends` order is what decides the winner. `netcdf_summary_1()` calls
+`first(longitude)` and needs dplyr's, which is what the original `libraries.Rmd`
+produced by attaching data.table before tidyverse. The remaining check output is
+that NOTE, a matching one about undefined globals, and a WARNING that the
+exported functions have no `.Rd` files.
 
 ## Templates
 
