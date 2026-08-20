@@ -37,38 +37,6 @@ netcdf_loc_summary <- function(df) {
     arrange(desc(`Diff(Lon)`))
 }
 
-netcdf_time_location_qc_summary <- function(df) {
-  time_qc_count <- df %>%
-    count(time_qc) %>%
-    rename(`QC flag` = time_qc, `Time QC count` = n)
-
-  position_qc_count <- df %>%
-    count(position_qc) %>%
-    rename(`QC flag` = position_qc, `Position QC count` = n)
-
-  time_qc_count %>%
-    full_join(position_qc_count)%>%
-    mutate(
-      `Time QC count` = replace_na(`Time QC count`, 0),
-      `Position QC count` = replace_na(`Position QC count`, 0)
-    ) %>%
-    arrange(`QC flag`)
-}
-
-create_time_location_qc_summary_tab <- function(df1, df2) {
-  platform_n_1 <- df1 %>% distinct(platform_code) %>% nrow()
-  profile_n_1 <- df1 %>% distinct(platform_code, profile_no) %>% nrow()
-  obs_n_1 <- df1 %>% summarise(n = sum(observation_no_count)) %>% pull(n)
-
-  platform_n_2 <- df2 %>% distinct(platform_code) %>% nrow()
-  profile_n_2 <- df2 %>% distinct(platform_code, profile_no) %>% nrow()
-  obs_n_2 <- df2 %>% summarise(n = sum(observation_no_count)) %>% pull(n)
-
-  tibble(`Level` = c("Platform", "Profile", "Observation"),
-         `Before filtering` = c(platform_n_1, profile_n_1, obs_n_1),
-         `After filtering` = c(platform_n_2, profile_n_2, obs_n_2))
-}
-
 get_loc_by_platform <- function(df, platform) {
   df %>% filter(platform_code == platform)
 }

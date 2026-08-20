@@ -22,7 +22,6 @@ remotes::install_github("AIQC-Hub/aiqcreport@v0.1.0")
 | `R/summary.R` | profile-summary aggregation and region plots |
 | `R/var.R` | per-variable summaries |
 | `R/qc.R` | IOC QC flag definitions, counts, distributions |
-| `R/duplicates.R` | duplicate-profile detection (bal/med only) |
 | `R/paths.R` | `template_path()`, `aiqc_data_dir()` |
 | `inst/templates/` | the `{{placeholder}}` knitr fragments |
 
@@ -41,5 +40,10 @@ res <- knitr::knit_child(text = src, quiet = TRUE)
 cat(res, sep = "\n")
 ```
 
-`summary_location_filtering.Rmd` (bal-report) and `summary_location_filtering3.Rmd`
-(med-report) are unused by arc-report but must stay until those sites are converted.
+## Scope
+
+Everything here is used by at least one of the three sites. The duplicate-detection
+functions, `netcdf_time_location_qc_summary` and both `summary_location_filtering*`
+templates were dropped once all three had been converted and their call sites went to
+zero. `exclude_locations_common` looks unused but is not — med-report's GL region file
+calls it twice, to cut two boxes out of the Mediterranean.

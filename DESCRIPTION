@@ -22,4 +22,9 @@ Depends:
     rlang,
     scales,
     tidyverse
+Imports:
+    digest,
+    jsonlite,
+    knitr,
+    utils
 RoxygenNote: 7.3.2
