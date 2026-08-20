@@ -38,6 +38,8 @@ manifests.
 | `R/var.R` | per-variable summaries |
 | `R/qc.R` | IOC QC flag definitions, counts, distributions |
 | `R/paths.R` | `template_path()`, `aiqc_data_dir()` |
+| `R/build.R` | `build_summaries()`: seastamp observations to profile summaries |
+| `R/fingerprint.R` | `fingerprint_frames()`: per-column digests of what pages read |
 | `inst/templates/` | the `{{placeholder}}` knitr fragments |
 
 Attaching the package attaches the plotting and table packages the templates
@@ -52,6 +54,22 @@ from"). Converting them to `import()` directives would be worse, not better:
 produced by attaching data.table before tidyverse. The remaining check output is
 that NOTE, a matching one about undefined globals, and a WARNING that the
 exported functions have no `.Rd` files.
+
+## Paths
+
+The package carries no filesystem defaults. `build_summaries()` requires `src_dir`
+and `out_dir`, and each site names its own in a `config.yml` at its repo root:
+
+```yaml
+data:
+  seastamp_dir: /path/to/seastamp/stamped/depth
+  summary_dir: /path/to/summaries
+```
+
+`SEASTAMP_DIR` and `SUMMARY_DIR` override it. The one path the package does infer
+is `aiqc_data_dir()`, which probes `../data` then `../../data` for a directory
+containing parquet — that is a repo-layout question, not a machine-specific one,
+and it is how the pages reach the summaries through each site's `data` symlink.
 
 ## Templates
 

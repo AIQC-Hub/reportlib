@@ -24,8 +24,10 @@
 #' whose grouped `median()` is approximate.
 #'
 #' @param datasets list of `list(src=, out=)`: seastamp basename and summary stem.
-#' @param src_dir directory holding the seastamp parquet.
-#' @param out_dir directory to write the summaries into.
+#' @param src_dir directory holding the seastamp parquet. Required: the package
+#'   deliberately holds no filesystem defaults, so each site names its own paths
+#'   (in `config.yml`) rather than inheriting one machine's layout.
+#' @param out_dir directory to write the summaries into. Required, as above.
 #' @param vars variables summarised in the base table.
 #' @param qc_vars variables to also emit QC 1 / QC 4 subsets for.
 #' @param chunk_rows approximate observation rows to hold in memory at once.
@@ -34,14 +36,19 @@
 #' @param only optional character vector of `src` names to restrict the run to.
 #' @export
 build_summaries <- function(datasets,
-                            src_dir = "/scratch/data/aiqc/seastamp/stamped/depth",
-                            out_dir = "/scratch/data/aiqc/merged",
+                            src_dir,
+                            out_dir,
                             vars = c("temp", "psal", "pres"),
                             qc_vars = c("temp", "psal"),
                             chunk_rows = 15e6,
                             blank_flag = "9",
                             force = FALSE,
                             only = character()) {
+
+  if (missing(src_dir) || missing(out_dir)) {
+    stop("src_dir and out_dir are required; name them in the site's config.yml",
+         call. = FALSE)
+  }
 
   qc_subsets <- c(qc1 = 1L, qc4 = 4L)
   # IOC QC flags, in the order get_flag_def() expects.
