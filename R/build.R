@@ -28,9 +28,7 @@
 #'   deliberately holds no filesystem defaults, so each site names its own paths
 #'   (in `config.yml`) rather than inheriting one machine's layout.
 #' @param out_dir directory to write the summaries into. Required, as above.
-#' @param vars variables summarised in the base table. `pres` was dropped when
-#'   the pressure pages went: nothing reads a pres_ column, and carrying them
-#'   cost about a fifth of every base file.
+#' @param vars variables summarised in the base table.
 #' @param qc_vars variables to also emit QC 1 / QC 4 subsets for.
 #' @param chunk_rows approximate observation rows to hold in memory at once.
 #' @param blank_flag IOC code to count a blank flag as; "9" is "Missing value".
@@ -40,8 +38,8 @@
 build_summaries <- function(datasets,
                             src_dir,
                             out_dir,
-                            vars = c("temp", "psal"),
-                            qc_vars = c("temp", "psal"),
+                            vars = c("temp", "psal", "pres"),
+                            qc_vars = c("temp", "psal", "pres"),
                             chunk_rows = 15e6,
                             blank_flag = "9",
                             force = FALSE,
@@ -71,7 +69,13 @@ build_summaries <- function(datasets,
   smean   <- function(x) if (all(is.na(x))) NA_real_ else as.numeric(mean(x, na.rm = TRUE))
   smedian <- function(x) if (all(is.na(x))) NA_real_ else as.numeric(stats::median(x, na.rm = TRUE))
   # First non-missing value, for the per-profile identity columns.
-  firstna <- function(x) { i <- which(!is.na(x)); if (length(i)) x[[i[[1L]]]] else x[[1L]] }
+  # x[NA_integer_] rather than x[[1L]] for the empty case: data.table evaluates
+  # `j` once on a zero-row prototype to learn the column types, and x[[1L]] is a
+  # subscript error there. This is reached when a QC subset is empty.
+  firstna <- function(x) {
+    i <- which(!is.na(x))
+    if (length(i)) x[[i[[1L]]]] else if (length(x)) x[[1L]] else x[NA_integer_]
+  }
 
   # Per-variable statistics, as a fragment of a data.table `j` expression.
   stat_code <- function(v, col = v) sprintf(
@@ -150,7 +154,12 @@ build_summaries <- function(datasets,
       for (nm in names(qc_subsets)) {
         sub <- dt[get(paste0(v, "_flag")) == qc_subsets[[nm]]]
         key <- paste0(nm, "_", v)
-        out[[key]] <- if (nrow(sub) == 0L) NULL else agg(
+        # Written even when the subset is empty. nrt_mo has no QC 4 pressure
+        # observation at all, and skipping the file there left the page reading
+        # a parquet that did not exist. data.table returns a correctly typed
+        # zero-row frame, so the site loads it and the templates take their
+        # no-data branch.
+        out[[key]] <- agg(
           sub, paste(identity_code, "observation_no_count = .N", stat_code(v), sep = ",\n   ")
         )
       }
