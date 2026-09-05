@@ -28,7 +28,9 @@
 #'   deliberately holds no filesystem defaults, so each site names its own paths
 #'   (in `config.yml`) rather than inheriting one machine's layout.
 #' @param out_dir directory to write the summaries into. Required, as above.
-#' @param vars variables summarised in the base table.
+#' @param vars variables summarised in the base table. `pres` was dropped when
+#'   the pressure pages went: nothing reads a pres_ column, and carrying them
+#'   cost about a fifth of every base file.
 #' @param qc_vars variables to also emit QC 1 / QC 4 subsets for.
 #' @param chunk_rows approximate observation rows to hold in memory at once.
 #' @param blank_flag IOC code to count a blank flag as; "9" is "Missing value".
@@ -38,7 +40,7 @@
 build_summaries <- function(datasets,
                             src_dir,
                             out_dir,
-                            vars = c("temp", "psal", "pres"),
+                            vars = c("temp", "psal"),
                             qc_vars = c("temp", "psal"),
                             chunk_rows = 15e6,
                             blank_flag = "9",
@@ -99,7 +101,7 @@ build_summaries <- function(datasets,
   # --- per-chunk work --------------------------------------------------------
 
   read_chunk <- function(src, platforms) {
-    cols <- c("platform_code", "profile_no", "profile_timestamp", "observation_no",
+    cols <- c("platform_code", "profile_no", "profile_timestamp",
               "time_qc", "position_qc", "longitude", "latitude",
               "profile_longitude", "profile_latitude",
               vars, paste0(vars, "_qc"))
@@ -136,7 +138,10 @@ build_summaries <- function(datasets,
   }
 
   summarise_chunk <- function(dt) {
-    base_j <- paste(c(identity_code, stat_code("observation_no"),
+    # Only the count: the mean, median, min and max of an observation number
+    # within a profile describe the numbering, not the data, and no page reads
+    # them. `.N` is the same count stat_code() computed.
+    base_j <- paste(c(identity_code, "observation_no_count = .N",
                       unlist(lapply(vars, function(v) paste(stat_code(v), flag_code(v), sep = ",\n   ")))),
                     collapse = ",\n   ")
     out <- list(base = agg(dt, base_j))
