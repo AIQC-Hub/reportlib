@@ -89,12 +89,15 @@ create_region_hist <- function(df, title, xtitle) {
     theme_pubr(base_size = 12)
 }
 
+# 300 hexagons across the range. The figures are drawn 1920px wide, so the old
+# 1000 bins put roughly two pixels in a hexagon -- detail no reader can see,
+# paid for at 2.4s per map against 1.0s at 300 (nrt_ar, 295k profiles). The
+# row-count branch went with it: the bin count is about what the reader can
+# resolve, not about how many points went in.
+REGION_SCATTER_BINS <- 300
+
 create_region_scatter <- function(df, title, lat_range, lon_range) {
-  if (nrow(df) < 5000) {
-    nbins <- 500
-  } else {
-    nbins <- 1000
-  }
+  nbins <- REGION_SCATTER_BINS
 
   ggplot(df, aes(x = longitude, y = latitude)) +
     annotation_borders("world", fill = "lightgray", color = "gray") +
