@@ -1,6 +1,18 @@
 # Profile-summary aggregation and the region plots.
 
+# Reducing to one row per platform x profile. The grouped form below is what
+# observation-level input needs; on the profile-level summaries the sites now
+# read, every group has exactly one row and the grouping costs 15s per page
+# against 0.01s for the direct transform (nrt_ar, 295k profiles). Both produce
+# the same frame, sorted by platform and profile, so the fast path arranges.
 netcdf_summary_1 <- function(df) {
+  if (one_row_per_profile(df)) {
+    return(df %>%
+      transmute(platform_code, profile_no, obs_count = observation_no_count,
+                profile_timestamp, longitude, latitude) %>%
+      arrange(platform_code, profile_no))
+  }
+
   df %>%
     group_by(platform_code, profile_no) %>%
     summarise(obs_count = sum(observation_no_count), profile_timestamp = first(profile_timestamp),

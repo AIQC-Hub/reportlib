@@ -28,5 +28,6 @@ Imports:
     stats,
     jsonlite,
     knitr,
-    utils
+    utils,
+    vctrs
 RoxygenNote: 7.3.2

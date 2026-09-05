@@ -2,12 +2,29 @@
 #
 # filer_locations_common() keeps the historical spelling: it is called by name
 # from every region file in all three report repos.
+#
+# The location filters were written against observation-level data, where a
+# profile spans many rows and its position has to be taken from the first of
+# them. build_summaries() now delivers one row per platform x profile, so that
+# group_by/summarise/semi_join is a no-op that costs seconds per page (5.9s vs
+# 0.2s on nrt_ar). one_row_per_profile() picks the direct filter when the input
+# is already profile-level and falls back to the general path when it is not.
+
+one_row_per_profile <- function(df) {
+  all(c("platform_code", "profile_no") %in% names(df)) &&
+    !vctrs::vec_duplicate_any(df[, c("platform_code", "profile_no")])
+}
 
 filter_profile_level_qc <- function(df) {
   df %>% filter((time_qc == 1) & (position_qc %in% c(1, -128)))
 }
 
 filer_locations_common <- function(df, min_lon, max_lon, min_lat, max_lat) {
+  if (one_row_per_profile(df)) {
+    return(df %>% dplyr::filter((longitude >= min_lon) & (longitude <= max_lon) &
+                                (latitude >= min_lat) & (latitude <= max_lat)))
+  }
+
   df_filtered <- df %>%
       group_by(platform_code, profile_no) %>%
       summarise(longitude = first(longitude), latitude = first(latitude)) %>%
@@ -19,6 +36,11 @@ filer_locations_common <- function(df, min_lon, max_lon, min_lat, max_lat) {
 }
 
 exclude_locations_common <- function(df, lon1, lat1, lon2, lat2) {
+  if (one_row_per_profile(df)) {
+    return(df %>% dplyr::filter(!((longitude >= lon1) & (latitude >= lat1) &
+                                  (longitude <= lon2) & (latitude <= lat2))))
+  }
+
   df_filtered <- df %>%
       group_by(platform_code, profile_no) %>%
       summarise(longitude = first(longitude), latitude = first(latitude)) %>%
