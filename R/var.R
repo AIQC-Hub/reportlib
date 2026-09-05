@@ -1,4 +1,21 @@
-# Per-variable summaries (temperature, salinity).
+# Per-variable summaries (temperature, salinity, pressure).
+
+# The four headline numbers under "Descriptive statistics", as markdown.
+#
+# It is a function rather than four inline `r` expressions because a tab can be
+# empty: nrt_mo has no QC 4 pressure observation at all, and min()/max() of
+# nothing are Inf and -Inf, which reached the page as a blank, an NA, a NaN and
+# a stray dash. Say so instead.
+var_stats_bullets <- function(df, var_x) {
+  if (nrow(df) == 0) {
+    return("*No profile carries an observation with this flag, so there is nothing to summarise.*")
+  }
+  at <- function(suffix, f) round(f(df %>% pull(paste0(var_x, "_", suffix))), 2)
+  paste0("  - `Min`: ", at("min", min), "\n",
+         "  - `Median`: ", at("median", stats::median), "\n",
+         "  - `Mean`: ", at("mean", mean), "\n",
+         "  - `Max`: ", at("max", max), "\n")
+}
 
 var_summary_1 <- function(df, var_x) {
   col_min <- sym(paste0(var_x, "_min"))

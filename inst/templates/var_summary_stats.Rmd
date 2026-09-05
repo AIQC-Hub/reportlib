@@ -25,17 +25,9 @@ kbl_table(na_summary({{df_qc1}}, "{{var}}")) %>% kable_styling(font_size = 12)
 
 #### Descriptive statistics
 
-```{r, t_var_stats_qc1_desc, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10}
-min_var <- min(df_na_filtered_qc1 %>% pull(paste0("{{var}}", "_min"))) %>% round(2)
-max_var <- max(df_na_filtered_qc1 %>% pull(paste0("{{var}}", "_max"))) %>% round(2)
-mean_var <- mean(df_na_filtered_qc1 %>% pull(paste0("{{var}}", "_mean"))) %>% round(2)
-median_var <- median(df_na_filtered_qc1 %>% pull(paste0("{{var}}", "_median"))) %>% round(2)
+```{r, t_var_stats_qc1_desc, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
+cat(var_stats_bullets(df_na_filtered_qc1, "{{var}}"))
 ```
-
-  - `Min`: `r min_var`
-  - `Median`: `r median_var`
-  - `Mean`: `r mean_var`
-  - `Max`: `r max_var`
 
 #### Summary table of `r tolower("{{var_name}}")` by platform
 
@@ -60,17 +52,9 @@ kbl_table(na_summary({{df_qc4}}, "{{var}}")) %>% kable_styling(font_size = 12)
 
 #### Descriptive statistics
 
-```{r, t_var_stats_qc4_desc, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10}
-min_var <- min(df_na_filtered_qc4 %>% pull(paste0("{{var}}", "_min"))) %>% round(2)
-max_var <- max(df_na_filtered_qc4 %>% pull(paste0("{{var}}", "_max"))) %>% round(2)
-mean_var <- mean(df_na_filtered_qc4 %>% pull(paste0("{{var}}", "_mean"))) %>% round(2)
-median_var <- median(df_na_filtered_qc4 %>% pull(paste0("{{var}}", "_median"))) %>% round(2)
+```{r, t_var_stats_qc4_desc, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
+cat(var_stats_bullets(df_na_filtered_qc4, "{{var}}"))
 ```
-
-  - `Min`: `r min_var`
-  - `Median`: `r median_var`
-  - `Mean`: `r mean_var`
-  - `Max`: `r max_var`
 
 #### Summary table of `r tolower("{{var_name}}")` by platform
 
@@ -95,19 +79,9 @@ kbl_table(na_summary({{df}}, "{{var}}")) %>% kable_styling(font_size = 12)
 
 #### Descriptive statistics
 
-```{r, t_var_stats_all_desc, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10}
-
-min_var <- min(df_na_filtered %>% pull(paste0("{{var}}", "_min"))) %>% round(2)
-max_var <- max(df_na_filtered %>% pull(paste0("{{var}}", "_max"))) %>% round(2)
-mean_var <- mean(df_na_filtered %>% pull(paste0("{{var}}", "_mean"))) %>% round(2)
-median_var <- median(df_na_filtered %>% pull(paste0("{{var}}", "_median"))) %>% round(2)
-
+```{r, t_var_stats_all_desc, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
+cat(var_stats_bullets(df_na_filtered, "{{var}}"))
 ```
-
-  - `Min`: `r min_var`
-  - `Median`: `r median_var`
-  - `Mean`: `r mean_var`
-  - `Max`: `r max_var`
 
 #### Summary table of `r tolower("{{var_name}}")` by platform
 
