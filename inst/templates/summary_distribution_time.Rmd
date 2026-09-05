@@ -37,23 +37,52 @@ print(p_month_hist)
  - **{{time_span3}}**: `r paste0("from ", {{time_span3_from}}, " to ", {{time_span3_to}})`
  - **{{time_span4}}**: `r paste0("from ", {{time_span4_from}}, " to ", {{time_span4_to}})`
 
-```{r, t_summary_dist4, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
+```{r, t_summary_dist4_setup, echo = FALSE, message = FALSE, warning = FALSE}
 
 ts_lst <- split_time_spans(summary_table_netcdf)
 
+```
+
+::: {.panel-tabset}
+
+#### {{time_span1}}
+
+```{r, t_summary_dist4_ts1, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
 p_long_x_lat_ts1 <- get_loc_by_timespan(ts_lst, "{{time_span1}}") %>%
   create_region_scatter("Time span: {{time_span1}}", lat_range, lon_range)
 
+print(p_long_x_lat_ts1)
+
+```
+
+#### {{time_span2}}
+
+```{r, t_summary_dist4_ts2, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
 p_long_x_lat_ts2 <- get_loc_by_timespan(ts_lst, "{{time_span2}}") %>%
   create_region_scatter("Time span: {{time_span2}}", lat_range, lon_range)
 
+print(p_long_x_lat_ts2)
+
+```
+
+#### {{time_span3}}
+
+```{r, t_summary_dist4_ts3, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
 p_long_x_lat_ts3 <- get_loc_by_timespan(ts_lst, "{{time_span3}}") %>%
   create_region_scatter("Time span: {{time_span3}}", lat_range, lon_range)
 
+print(p_long_x_lat_ts3)
+
+```
+
+#### {{time_span4}}
+
+```{r, t_summary_dist4_ts4, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
 p_long_x_lat_ts4 <- get_loc_by_timespan(ts_lst, "{{time_span4}}") %>%
   create_region_scatter("Time span: {{time_span4}}", lat_range, lon_range)
 
-print(plot_grid(p_long_x_lat_ts1, p_long_x_lat_ts2,
-                p_long_x_lat_ts3, p_long_x_lat_ts4, nrow = {{plot_nrow}}))
+print(p_long_x_lat_ts4)
 
 ```
+
+:::

@@ -15,36 +15,83 @@ create_dt_summary_tab(summary_loc_table, cols=loc_table_cols)
 
 ### Mapped locations of all profiles and three selected platforms
 
-```{r, t_summary_loc2, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
+```{r, t_summary_loc2_setup, echo = FALSE, message = FALSE, warning = FALSE}
+
+# Shared by every map below, and by the time-span and observation-count
+# templates that follow, so it is computed outside the tabset.
 lat_range <- range(summary_table_netcdf$latitude)
 lon_range <- range(summary_table_netcdf$longitude)
 
+```
+
+::: {.panel-tabset}
+
+#### All profiles
+
+```{r, t_summary_loc2_all, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
 p_long_x_lat <- summary_table_netcdf %>%
  create_region_scatter("Scatter plot with positions", lat_range, lon_range)
 
+print(p_long_x_lat)
+
+```
+
+#### {{platform1}}
+
+```{r, t_summary_loc2_platform1, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
 p_long_x_lat_platform1 <- get_loc_by_platform(summary_table_netcdf, "{{platform1}}") %>%
   create_region_scatter("Platform: {{platform1}}", lat_range, lon_range)
 
+print(p_long_x_lat_platform1)
+
+```
+
+#### {{platform2}}
+
+```{r, t_summary_loc2_platform2, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
 p_long_x_lat_platform2 <- get_loc_by_platform(summary_table_netcdf, "{{platform2}}") %>%
   create_region_scatter("Platform: {{platform2}}", lat_range, lon_range)
 
+print(p_long_x_lat_platform2)
+
+```
+
+#### {{platform3}}
+
+```{r, t_summary_loc2_platform3, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = {{plot_height}}}
 p_long_x_lat_platform3 <- get_loc_by_platform(summary_table_netcdf, "{{platform3}}") %>%
   create_region_scatter("Platform: {{platform3}}", lat_range, lon_range)
 
-print(plot_grid(p_long_x_lat, p_long_x_lat_platform1,
-                p_long_x_lat_platform2, p_long_x_lat_platform3, nrow = {{plot_nrow}}))
+print(p_long_x_lat_platform3)
 
 ```
+
+:::
 
 ### Histograms of longitudes and latitudes from all profiles
 
-```{r, t_summary_loc3, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10}
+::: {.panel-tabset}
+
+#### Longitude
+
+```{r, t_summary_loc3_longitude, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
 
 p_long_dense <- summary_table_netcdf %>% mutate(x = longitude) %>%
   create_region_hist("Histogram of longitude", "Longitude")
+
+print(p_long_dense)
+
+```
+
+#### Latitude
+
+```{r, t_summary_loc3_latitude, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 6}
+
 p_lat_dense <- summary_table_netcdf %>% mutate(x = latitude) %>%
   create_region_hist("Histogram of latitude", "Latitude")
 
-print(plot_grid(p_long_dense, p_lat_dense, nrow = 1))
+print(p_lat_dense)
 
 ```
+
+:::
