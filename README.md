@@ -10,7 +10,7 @@ Each site repo keeps only what is genuinely region-specific — its
 `_quarto.yml`. Everything they had in common lives here.
 
 ```r
-remotes::install_github("AIQC-Hub/reportlib@v0.1.7")
+remotes::install_github("AIQC-Hub/reportlib@v0.1.8")
 ```
 
 The three sites pin that tag, in `DESCRIPTION` and in their build workflows, so a
