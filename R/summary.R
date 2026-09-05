@@ -89,22 +89,47 @@ create_region_hist <- function(df, title, xtitle) {
     theme_pubr(base_size = 12)
 }
 
-# 300 hexagons across the range. The figures are drawn 1920px wide, so the old
-# 1000 bins put roughly two pixels in a hexagon -- detail no reader can see,
-# paid for at 2.4s per map against 1.0s at 300 (nrt_ar, 295k profiles). The
-# row-count branch went with it: the bin count is about what the reader can
-# resolve, not about how many points went in.
-REGION_SCATTER_BINS <- 300
+# Back to the original bin counts. 300 was a speed compromise, and it changed
+# what the map says: at 1000 the individual cruise tracks stay legible, at 300
+# they smooth into coverage blobs. `freeze: auto` in the sites pays the cost on
+# a real change rather than on every rebuild, so the resolution can be chosen
+# for the reader again.
+REGION_SCATTER_BINS <- c(small = 500, large = 1000)
+
+# Longitude and latitude are not the same unit on the ground: a degree of
+# longitude is cos(latitude) as long as a degree of latitude. Letting the panel
+# stretch to whatever the figure device happens to be is what made the maps
+# look wrong, most visibly in the Arctic where the distortion is largest.
+# Fixing the ratio at 1/cos(mean latitude) gives each region its natural shape
+# and leaves the unused part of the device as margin. The clamp keeps the ratio
+# finite for a range centred on the pole.
+region_aspect <- function(lat_range) {
+  1 / cos(min(abs(mean(lat_range)), 85) * pi / 180)
+}
 
 create_region_scatter <- function(df, title, lat_range, lon_range) {
-  nbins <- REGION_SCATTER_BINS
+  nbins <- if (nrow(df) < 5000) {
+    REGION_SCATTER_BINS[["small"]]
+  } else {
+    REGION_SCATTER_BINS[["large"]]
+  }
 
+  # Note that `bins` divides the *scale* range, and annotation_borders() puts the
+  # whole world on the scale, so a bin is 360/nbins degrees of longitude wide
+  # whatever the region -- about 0.36 degrees at 1000, roughly 40km, the same
+  # cell everywhere. That reads as accidental but it is the behaviour to keep:
+  # binning across each region's own range instead was measured and it makes the
+  # Baltic 1km cells, which at 1920px are single specks on an empty map.
   ggplot(df, aes(x = longitude, y = latitude)) +
     annotation_borders("world", fill = "lightgray", color = "gray") +
     geom_hex(bins = nbins) +
     ggtitle(title) +
     xlab("Longitude") +
     ylab("Latitude") +
-    coord_cartesian(xlim = lon_range, ylim = lat_range) +
-    theme_pubr(base_size = 12)
+    coord_fixed(ratio = region_aspect(lat_range), xlim = lon_range, ylim = lat_range) +
+    theme_pubr(base_size = 12) +
+    # The default key is about an inch wide, which ran the count labels into
+    # each other ("500 100015002000").
+    theme(legend.key.width = grid::unit(5, "cm"),
+          legend.key.height = grid::unit(0.4, "cm"))
 }
