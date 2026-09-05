@@ -1,6 +1,6 @@
 Package: reportlib
 Title: Shared Machinery for the AIQC In Situ Summary Reports
-Version: 0.1.4
+Version: 0.1.5
 Authors@R: person("Takaya", "Saito", email = "takaya.saito@hi.no", role = c("aut", "cre"))
 Description: Functions and knitr templates shared by the regional CTD
     data-summary sites (arc-report, bal-report, med-report). Each site keeps
