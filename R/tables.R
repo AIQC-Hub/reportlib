@@ -2,6 +2,7 @@
 
 kbl_table <- function(x) {
   kbl(x, format.args = list(big.mark = ",")) %>%
+    scroll_box(width = "100%") %>%
     kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 }
 
@@ -9,7 +10,7 @@ kbl_table <- function(x) {
 
 create_dt_summary_tab <- function(df, cols=c('Lon', 'Lat')) {
   DT::datatable(df, rownames = FALSE,
-      options = list(searching = TRUE, paging = TRUE, info = TRUE,
+      options = list(searching = TRUE, paging = TRUE, info = TRUE, scrollX = TRUE,
                      lengthMenu = list(c(10, 50, 100, -1), c("10", "50", "100", "All")))) %>%
     formatRound(columns = cols, digits = 1) %>%
     htmlwidgets::prependContent(tags$style(HTML('table.dataTable {font-size: 12px;}')))
